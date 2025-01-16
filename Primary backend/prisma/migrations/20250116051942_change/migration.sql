@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Zap" ALTER COLUMN "trigerId" SET DATA TYPE TEXT;

@@ -10,10 +10,11 @@ password:z.string().min(6).max(8)
 })
 export const  zap=z.object({
     availableTriggerid:z.string(),
-    metadata:z.string().optional(),
-    action:z.object({
+    metadata:z.any().optional(),
+    action:z.array(z.object({
         availabaction:z.string(),
         metadata:z.any().optional()
-    })
+    
+    }))
 })
 

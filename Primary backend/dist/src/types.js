@@ -13,9 +13,9 @@ exports.usersingin = zod_1.z.object({
 });
 exports.zap = zod_1.z.object({
     availableTriggerid: zod_1.z.string(),
-    metadata: zod_1.z.any().optional(),
-    action: zod_1.z.array(zod_1.z.object({
+    metadata: zod_1.z.string().optional(),
+    action: zod_1.z.object({
         availabaction: zod_1.z.string(),
         metadata: zod_1.z.any().optional()
-    }))
+    })
 });

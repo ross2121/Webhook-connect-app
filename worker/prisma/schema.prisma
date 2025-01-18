@@ -50,6 +50,7 @@ model Trigger{
    metaData Json @default("{}")
   Zap  Zap @relation(fields: [Zapid],references: [id])
   AvailabeTrigger   Trigeredavailable @relation(fields: [trigerid],references: [id])
+
 }
 model Trigeredavailable{
   id String @id @default(uuid())

@@ -6,6 +6,9 @@
     "build": "tsc",
     "start": "node dist/index.js"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -27,6 +30,8 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.16",
     "otp-generator": "^4.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
     "zod": "^3.24.1"
   }
 }

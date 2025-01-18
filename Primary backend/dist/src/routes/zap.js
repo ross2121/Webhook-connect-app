@@ -19,7 +19,6 @@ const prisma = new client_1.PrismaClient();
 router.post("/zaps", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.id;
     const body = req.body;
-    console.log(body);
     const parsedData = types_1.zap.safeParse(body);
     if (!parsedData.success) {
         return res.status(400).send({ message: "Incorrect inputs" });
@@ -33,24 +32,22 @@ router.post("/zaps", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, 
                     Action: {
                         create: Array.isArray(parsedData.data.action)
                             ? parsedData.data.action.map((x, index) => ({
-                                actionId: x.availabaction,
+                                actionId: x.availableActionId,
                                 SortingOrder: index,
-                                metaData: x.metadata,
+                                metadata: x.actionMetadata,
                             }))
                             : [],
                     },
                 },
             });
-            console.log("zap done");
             const trigger = yield tx.trigger.create({
                 data: {
                     Zapid: zap.id,
-                    // metaData:parsedData.data.action[0].metadata,
+                    metaData: parsedData.data.action.metadata,
                     trigerid: parsedData.data.availableTriggerid
                 }
             });
-            console.log("trigger done");
-            yield tx.zap.update({
+            yield prisma.zap.update({
                 where: {
                     id: zap.id
                 }, data: {
@@ -59,7 +56,6 @@ router.post("/zaps", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, 
             });
             return zap.id;
         }));
-        console.log("update done");
         return res.status(201).send({ zapId });
     }
     catch (error) {
@@ -87,13 +83,12 @@ router.get("/", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, void 
     res.json({ zap });
 }));
 router.get("/:zapid", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const ids = req.id;
-    const zapidd = req.params;
-    console.log(zapidd);
+    const id = req.id;
+    const zapid = req.params;
     const zap = yield prisma.zap.findFirst({
         where: {
-            id: zapidd.zapid,
-            userid: ids
+            userid: id,
+            id: zapid,
         }, include: {
             Trigger: {
                 include: {

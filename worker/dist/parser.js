@@ -1,11 +1,13 @@
-
-export function parse(text: string, values: any, startDelimeter = "{", endDelimeter = "}") {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.parse = parse;
+function parse(text, values, startDelimeter = "{", endDelimeter = "}") {
     // You received {comment.amount} momey from {comment.link}
-//    parse(my name is {comment.name} my address is comment.addrss)",{
-// comment:{
-// name:"youval",
-// address:123232321
-// }"
+    //    parse(my name is {comment.name} my address is comment.addrss)",{
+    // comment:{
+    // name:"youval",
+    // address:123232321
+    // }"
     let startIndex = 0;
     let endIndex = 1;
     let finalString = "";
@@ -15,12 +17,9 @@ export function parse(text: string, values: any, startDelimeter = "{", endDelime
             while (text[endPoint] !== endDelimeter) {
                 endPoint++;
             }
-            
             let stringHoldingValue = text.slice(startIndex + 1, endPoint);
             const keys = stringHoldingValue.split(".");
-            let localValues = {
-                ...values
-            }
+            let localValues = Object.assign({}, values);
             for (let i = 0; i < keys.length; i++) {
                 if (typeof localValues === "string") {
                     localValues = JSON.parse(localValues);
@@ -30,14 +29,15 @@ export function parse(text: string, values: any, startDelimeter = "{", endDelime
             finalString += localValues;
             startIndex = endPoint + 1;
             endIndex = endPoint + 2;
-        } else {
+        }
+        else {
             finalString += text[startIndex];
             startIndex++;
             endIndex++;
         }
     }
     if (text[startIndex]) {
-        finalString += text[startIndex]
+        finalString += text[startIndex];
     }
     return finalString;
 }

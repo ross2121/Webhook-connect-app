@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
-const  router=Router();
+const  app=Router();
 const prisma=new PrismaClient();
-router.get("/action",async(res:any)=>{
-    const action=await prisma.actionavailable.findMany({});
-    res.send({action,status:200});
+app.get("/action",async(req:any,res:any)=>{
+    const triggers=await prisma.actionavailable.findMany({});
+    res.send({triggers,status:2000});
 })
-export const availabaction=router;
+export const availabaction=app;

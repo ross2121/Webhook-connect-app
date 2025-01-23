@@ -8,16 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.zaproute = void 0;
 const express_1 = require("express");
 const middleware_1 = require("../middleware");
 const types_1 = require("../types");
 const client_1 = require("@prisma/client");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const router = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
 router.post("/zaps", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.id;
+    console.log(id);
     const body = req.body;
     console.log(body);
     const parsedData = types_1.zap.safeParse(body);
@@ -41,7 +47,6 @@ router.post("/zaps", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, 
                     },
                 },
             });
-            console.log("zap done");
             const trigger = yield tx.trigger.create({
                 data: {
                     Zapid: zap.id,
@@ -49,7 +54,6 @@ router.post("/zaps", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, 
                     trigerid: parsedData.data.availableTriggerid
                 }
             });
-            console.log("trigger done");
             yield tx.zap.update({
                 where: {
                     id: zap.id
@@ -59,7 +63,6 @@ router.post("/zaps", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, 
             });
             return zap.id;
         }));
-        console.log("update done");
         return res.status(201).send({ zapId });
     }
     catch (error) {
@@ -89,7 +92,6 @@ router.get("/", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, void 
 router.get("/:zapid", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const ids = req.id;
     const zapidd = req.params;
-    console.log(zapidd);
     const zap = yield prisma.zap.findFirst({
         where: {
             id: zapidd.zapid,

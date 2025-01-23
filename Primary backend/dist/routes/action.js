@@ -12,10 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.availabaction = void 0;
 const client_1 = require("@prisma/client");
 const express_1 = require("express");
-const router = (0, express_1.Router)();
+const app = (0, express_1.Router)();
 const prisma = new client_1.PrismaClient();
-router.get("/action", (res) => __awaiter(void 0, void 0, void 0, function* () {
-    const action = yield prisma.actionavailable.findMany({});
-    res.send({ action, status: 200 });
+app.get("/action", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const triggers = yield prisma.actionavailable.findMany({});
+    res.send({ triggers, status: 2000 });
 }));
-exports.availabaction = router;
+exports.availabaction = app;

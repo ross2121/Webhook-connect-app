@@ -2,13 +2,14 @@ import { Router } from "express";
 import { auth } from "../middleware";
 import { zap } from "../types";
 import { PrismaClient } from "@prisma/client";
-
+import dotenv from "dotenv";
+dotenv.config();
 const router = Router();
 const prisma = new PrismaClient();
 
 router.post("/zaps",auth,async (req:any,res:any)=> {
   const id = (req as any).id;
- 
+   console.log(id);
   const body = req.body;
   console.log(body);
  
@@ -33,7 +34,7 @@ router.post("/zaps",auth,async (req:any,res:any)=> {
           },
         },
       });
-      console.log("zap done");
+    
       const trigger=await tx.trigger.create({
         data:{
             Zapid:zap.id,
@@ -41,7 +42,6 @@ router.post("/zaps",auth,async (req:any,res:any)=> {
             trigerid:parsedData.data.availableTriggerid
         }
       })
-       console.log("trigger done");
       await tx.zap.update({
         where:{
             id:zap.id
@@ -52,10 +52,7 @@ router.post("/zaps",auth,async (req:any,res:any)=> {
       return zap.id;
 
     });
-    console.log("update done");
-
-
-
+  
     return res.status(201).send({ zapId });
   } catch (error) {
     console.error("Error creating zap:", error); 
@@ -84,7 +81,7 @@ router.get("/",auth,async (req,res)=>{
 router.get("/:zapid",auth,async(req,res)=>{
     const ids=(req as any).id
     const zapidd=req.params;
-    console.log(zapidd);
+
     const zap=await prisma.zap.findFirst({
         where:{
          id:zapidd.zapid,

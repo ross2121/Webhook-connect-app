@@ -11,10 +11,9 @@ export async function sendSol(to: string, amount: string) {
         SystemProgram.transfer({
           fromPubkey: keypair.publicKey,
           toPubkey: new PublicKey(to),
-          lamports: parseFloat(amount) * LAMPORTS_PER_SOL, // 0.1 => 10 ^ 8
+          lamports: parseFloat(amount) * LAMPORTS_PER_SOL,
         })
     );
-
     await sendAndConfirmTransaction(connection, transferTransaction, [keypair]);
     console.log("sol Sent!")
 

@@ -21,6 +21,8 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const otp_generator_1 = __importDefault(require("otp-generator"));
 const middleware_1 = require("../middleware");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const router = (0, express_1.Router)();
 exports.transportmail = nodemailer_1.default.createTransport({
     service: "gmail",
@@ -105,7 +107,7 @@ router.post("/verify_otp", (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!code) {
             res.send({ message: "`code` is required" });
         }
-        console.log(req.app.locals.OTP);
+        // console.log(req.app.locals.OTP);
         if (parseInt(code) != parseInt(req.app.locals.OTP)) {
             res.send({ message: "Invalid OTP" });
         }
@@ -121,7 +123,8 @@ router.post("/verify_otp", (req, res) => __awaiter(void 0, void 0, void 0, funct
                     password: hash
                 }
             });
-            const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.JWT_SECRET);
+            const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "365d" });
+            console.log(token);
             res.send({ token, status: 200, user });
         }
     }
@@ -158,7 +161,8 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     if (!checkpassword) {
         return res.status(400).json({ message: "Invalid Passwordd" });
     }
-    const token = jsonwebtoken_1.default.sign({ id: userfind.id }, process.env.JWT_SECRET);
+    const token = jsonwebtoken_1.default.sign({ id: userfind.id }, process.env.JWT_SECRET, { expiresIn: "365d" });
+    console.log(token);
     res.send({ token, status: 200, userfind });
 }));
 router.get("/user", middleware_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

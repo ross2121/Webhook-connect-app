@@ -1,15 +1,13 @@
 import jwt from "jsonwebtoken"
 import {Request,Response,NextFunction} from "express"
-const string=process.env.JWT_SECRET
+const string=process.env.JWT_SECRET||"abc";
 export const auth=async(req:Request,res:Response,next:NextFunction)=>{
     
    try {
     if(!req.headers.authorization) {
         throw new Error("Authantication error");
     }
-    const token=req.headers.authorization.split(" ")[1];
-    
-    
+    const token = req.headers.authorization as unknown as string;
     if(!token){
         throw new Error("Authoriazation error");
     }

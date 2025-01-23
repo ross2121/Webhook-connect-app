@@ -20,7 +20,6 @@ app.use(express_1.default.json());
 // https://zapier.com/editor/275340302/draft/275340302/setup
 app.post("/zapier/:userid/:zapId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const zapid = req.params.zapId;
-    const userId = req.params.userid;
     const metadata = req.body;
     yield prisma.$transaction((ts) => __awaiter(void 0, void 0, void 0, function* () {
         const Mainzapid = yield ts.zaprun.create({

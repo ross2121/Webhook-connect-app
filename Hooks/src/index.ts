@@ -4,11 +4,11 @@ const app=express();
 const prisma=new PrismaClient();
 app.use(express.json());
 // https://zapier.com/editor/275340302/draft/275340302/setup
+
 app.post("/zapier/:userid/:zapId",async(req,res)=>{
     const zapid=req.params.zapId;
-    const userId = req.params.userid;   
     const metadata=req.body;
-    await prisma.$transaction(async (ts:any)=>{
+    await prisma.$transaction(async (ts)=>{
         const Mainzapid=await ts.zaprun.create({
             data:{
                 zapId:zapid,

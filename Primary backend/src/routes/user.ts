@@ -6,7 +6,11 @@ import nodemailer from "nodemailer";
 import bycrpt from "bcrypt"
 import otp from "otp-generator"
 import { auth } from "../middleware";
+import dotenv from "dotenv";
+dotenv.config();
 const router =Router();
+
+
 export const transportmail=nodemailer.createTransport({
     service:"gmail",
     auth:{
@@ -90,7 +94,7 @@ router.post("/verify_otp",async(req:any,res:any)=>{
     if(!code){
         res.send({message:"`code` is required"});
     }
-    console.log(req.app.locals.OTP);
+    // console.log(req.app.locals.OTP);
     if(parseInt(code)!=parseInt(req.app.locals.OTP)){
       res.send({message:"Invalid OTP"});
     }else{
@@ -105,7 +109,10 @@ router.post("/verify_otp",async(req:any,res:any)=>{
               password:hash
             }
         })
-        const token=jwt.sign({id:user.id},process.env.JWT_SECRET as string);
+      
+        
+        const token=jwt.sign({id:user.id},process.env.JWT_SECRET as string,{expiresIn:"365d"});
+        console.log(token);
         res.send({token,status:200,user});
     }}catch(err){
         console.log(err);
@@ -143,7 +150,8 @@ router.post("/login",async(req:any,res:any)=>{
         return res.status(400).json({message:"Invalid Passwordd"});
 
     }
-    const token=jwt.sign({id:userfind.id},process.env.JWT_SECRET as string);
+    const token=jwt.sign({id:userfind.id},process.env.JWT_SECRET as string,{expiresIn:"365d"});
+    console.log(token);
     res.send({token,status:200,userfind});
 })
 router.get("/user",auth,async(req:any,res:any)=>{

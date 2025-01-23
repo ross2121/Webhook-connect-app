@@ -8,7 +8,7 @@ import { sendSol } from "./solana";
 const prisma=new PrismaClient();
 const TOPIC_NAME="zapier"
 const kafka=new Kafka({
-    clientId:'',
+    clientId:'producer-2',
     brokers:['localhost:9092']
 })
 async function  main() {
@@ -16,18 +16,20 @@ async function  main() {
     await consumer.connect();
     const producer=kafka.producer();
     await producer.connect();
-    await consumer.subscribe({topic:TOPIC_NAME,fromBeginning:true})
+    await consumer.subscribe({topic:TOPIC_NAME,fromBeginning:false})
     await consumer.run({
         autoCommit:false,
        eachMessage:async({topic,partition,message})=>{
-              console.log({partition,
+              console.log({topic,partition,
               offset:message.offset,
               value:message.value?.toString()})
               if(!message.value?.toString()){
+              console.log("no value found");
                 return;
               }
               const parsedmessge=JSON.parse(message.value?.toString());
               const zaprunid=parsedmessge.zaprunid;
+              console.log(zaprunid,zaprunid);
               const stage=parsedmessge.stage;
               const zaprundetails=await prisma.zaprun.findFirst({
                 where:{
@@ -45,6 +47,10 @@ async function  main() {
                     }
                 }
               })
+              console.log(zaprundetails);
+              if(!zaprundetails){
+                console.log("No zapdetail found");
+              }
               const currentaction=zaprundetails?.zap.Action.find(x=>x.SortingOrder===stage)
               if(!currentaction){
                 return;
@@ -56,22 +62,28 @@ async function  main() {
 // address:123232321
 // }"
               const zaprunmetadata=zaprundetails?.metadata;
-              if(currentaction.actiontype.id==="email"){
+              console.log(currentaction.actiontype.id.toString());
+              // console.log(currentaction.actiontype);
+              if((currentaction.actiontype.id).toString()==="email"){
+                console.log("You are at email section")
              const body = parse((currentaction.metaData as JsonObject)?.body as string, zaprunmetadata);
               const to=parse((currentaction.metaData as JsonObject)?.email as string,zaprunmetadata) ;
             // @ts-ignore
+            console.log("You are at email section")
               await sendEmail(to,body);
               }
               if(currentaction.actiontype.id==="send-sol"){
                 const amount=parse((currentaction.metaData as JsonObject)?.amount as string,zaprunmetadata );
                 const address=parse((currentaction.metaData as JsonObject)?.to as string,zaprunmetadata);
             // @ts-ignore
-                await sendSol(address,amount);
+            console.log("You are at solana section");    
+            await sendSol(address,amount);
               }
               await new Promise(r=>setTimeout(r,500));
-           
+           console.log("last stage");
               const laststage=(zaprundetails?.zap.Action?.length||1)-1;
               if(laststage!==stage){
+                console.log("check");
                 await producer.send({
                     topic:TOPIC_NAME,
                     messages: [{
@@ -82,11 +94,13 @@ async function  main() {
                       }]
                 })
               }
+              console.log("'commiit");
               await consumer.commitOffsets([{
                 topic:TOPIC_NAME,
                 partition:partition,
                 offset:(parseInt(message.offset)+1).toString()
               }])
+              console.log("final lasst");
             //   await producer.send({
             //     topic,
             //     messages:pendingrows.map(row=>{
@@ -99,4 +113,5 @@ async function  main() {
 
     })
 }
+main();
 
